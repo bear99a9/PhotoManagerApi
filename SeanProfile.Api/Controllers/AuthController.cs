@@ -17,11 +17,13 @@ namespace SeanProfile.Api.Controllers
         public static UserModel user = new UserModel();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public AuthController(IConfiguration configuration, IUserService userService)
+        public AuthController(IConfiguration configuration, IUserService userService, IAuthService authService)
         {
             _configuration = configuration;
             _userService = userService;
+            _authService = authService;
         }
 
 
