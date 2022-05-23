@@ -60,7 +60,7 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
-        public async Task<UserModel> GetUserByEmail(UserModel user)
+        public async Task<UserModel> GetUserByEmail<T>(T user)
         {
             try
             {

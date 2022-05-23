@@ -33,7 +33,7 @@ namespace SeanProfile.Api.Services
             CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordHash;
+            user.PasswordSalt = passwordSalt;
             user.Role = "Guest";
             user.Email = user.Email.ToLower();
             
@@ -42,6 +42,26 @@ namespace SeanProfile.Api.Services
             user = await _userRepo.GetUserByEmail(user);
 
             return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
+        }
+
+        public async Task<ServiceResponse<string>> Login(UserLogin userLogin)
+        {
+           
+            userLogin.Email = userLogin.Email.ToLower();
+            
+            var user = await _userRepo.GetUserByEmail<UserLogin>(userLogin);
+
+            if (user == null)
+            {
+                return new ServiceResponse<string> { Success = false, Message = "User not found" };
+            }
+
+            if (!VerifyPasswordHash(userLogin.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return new ServiceResponse<string> { Success = false, Message = "Password is incorrect" };
+            }
+
+            return new ServiceResponse<string> { Data = CreateToken(user), Message = "User logged in successfully" };
         }
 
         private async Task<bool> UserExists(string email)
@@ -55,7 +75,8 @@ namespace SeanProfile.Api.Services
             using (var hmac = new HMACSHA512())
             {
                 passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                passwordHash = hmac
+                    .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
 
@@ -63,7 +84,8 @@ namespace SeanProfile.Api.Services
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                var computedHash =
+                    hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
@@ -72,25 +94,25 @@ namespace SeanProfile.Api.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds);
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(1),
+                    signingCredentials: creds);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
         }
-
 
         private RefreshToken GenerateRefreshToken()
         {

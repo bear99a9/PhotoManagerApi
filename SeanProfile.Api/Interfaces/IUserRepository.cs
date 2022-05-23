@@ -7,6 +7,8 @@ namespace SeanProfile.Api.DataLayer
     {
         Task<bool> UserExists(string email);
         Task InsertNewUser(UserModel user);
-        Task<UserModel> GetUserByEmail(UserModel user);
+        Task<UserModel> GetUserByEmail<T>(T user);
+
+
     }
 }

@@ -52,25 +52,17 @@ namespace SeanProfile.Api.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(UserModel request)
+        public async Task<IActionResult> Login(UserLogin request)
         {
+            var response = await _authService.Login(request);
 
-            if (user.Username != request.Username)
+            if (!response.Success)
             {
-                return BadRequest("User not found");
+                return BadRequest(response);
             }
 
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                return BadRequest("Wrong password.");
-            }
 
-            string token = CreateToken(user);
-
-            var refreshToken = GenerateRefreshToken();
-            SetRefreshToken(refreshToken);
-
-            return Ok(token);
+            return Ok(response);
 
         }
 
@@ -95,14 +87,6 @@ namespace SeanProfile.Api.Controllers
             return Ok(token);
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
-        }
 
         private string CreateToken(UserModel user)
         {
