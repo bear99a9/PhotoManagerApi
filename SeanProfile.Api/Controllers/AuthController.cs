@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SeanProfile.Api.Model;
+using SeanProfile.Api.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -13,6 +14,15 @@ namespace SeanProfile.Api.Controllers
     public class AuthController : ControllerBase
     {
         public static UserModel user = new UserModel();
+        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
+
+        public AuthController(IConfiguration configuration, IUserService userService)
+        {
+            _configuration = configuration;
+            _userService = userService;
+        }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegister request)
@@ -35,7 +45,17 @@ namespace SeanProfile.Api.Controllers
                 return BadRequest("User not found");
             }
 
-            return Ok("My token here");
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+            string token = CreateToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(refreshToken);
+
+            return Ok(token);
 
         }
 

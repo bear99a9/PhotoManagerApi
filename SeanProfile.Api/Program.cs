@@ -1,5 +1,6 @@
 using SeanProfile.Api.DataLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SeanProfile.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
+builder.Services.AddSingleton<IUserService, UserService>();
 
 builder.Services.AddCors(options =>
 {
