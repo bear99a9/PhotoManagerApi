@@ -8,6 +8,7 @@ namespace SeanProfile.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TodoController : Controller
     {
         private readonly ITodoRepository _todoRepository;
@@ -17,7 +18,7 @@ namespace SeanProfile.Api.Controllers
             _todoRepository = todoRepository;
         }
         
-        [HttpGet("GetAllTodos")]
+        [HttpGet("GetAllTodos"), AllowAnonymous]
         public async Task<IActionResult> GetAllTodos()
         {
             try
