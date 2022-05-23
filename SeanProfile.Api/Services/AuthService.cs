@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SeanProfile.Api.DataLayer;
 using SeanProfile.Api.Model;
 using SeanProfile.Api.Services;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,15 +14,43 @@ namespace SeanProfile.Api.Services
     public class AuthService : IAuthService
     {
         public readonly IConfiguration _configuration;
-        public readonly IUserService _userService;
+        private readonly IUserRepository _userRepo;
 
-        public AuthService(IConfiguration configuration, IUserService userService)
+        public AuthService(IConfiguration configuration, IUserRepository userRepository)
         {
             _configuration = configuration;
-            _userService = userService;
+            _userRepo = userRepository;
         }
 
-        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+
+        public async Task<ServiceResponse<int>> Register(UserModel user)
+        {
+            if (await UserExists(user.Email))
+            {
+                return new ServiceResponse<int> { Success = false, Message = "Email address already exists" };
+            }
+
+            CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordHash;
+            user.Role = "Guest";
+            user.Email = user.Email.ToLower();
+            
+            await _userRepo.InsertNewUser(user);
+
+            user = await _userRepo.GetUserByEmail(user);
+
+            return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
+        }
+
+        private async Task<bool> UserExists(string email)
+        {
+            return await _userRepo.UserExists(email.ToLower());
+        }
+
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -30,7 +59,7 @@ namespace SeanProfile.Api.Services
             }
         }
 
-        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
@@ -39,7 +68,7 @@ namespace SeanProfile.Api.Services
             }
         }
 
-        public string CreateToken(UserModel user)
+        private string CreateToken(UserModel user)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -63,7 +92,7 @@ namespace SeanProfile.Api.Services
         }
 
 
-        public RefreshToken GenerateRefreshToken()
+        private RefreshToken GenerateRefreshToken()
         {
             var refreshToken = new RefreshToken
             {

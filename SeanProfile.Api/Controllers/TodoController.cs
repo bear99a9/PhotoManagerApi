@@ -32,7 +32,7 @@ namespace SeanProfile.Api.Controllers
             }
         }
 
-        [HttpGet("GetTodoById/{id}")]
+        [HttpGet("GetTodoById/{id}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetTodoById(int id)
         {
             try

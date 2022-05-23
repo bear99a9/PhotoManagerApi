@@ -27,7 +27,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
-builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
 

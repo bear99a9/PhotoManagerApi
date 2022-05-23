@@ -28,15 +28,20 @@ namespace SeanProfile.Api.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegister request)
+        public async Task<IActionResult> RegisterUser(UserRegister request)
         {
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            var response = await _authService.Register( new UserModel
+            {
+                Email = request.Email,
+                Password = request.Password
+            });
 
-            user.Username = request.Username;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
 
-            return Ok(user);
+            return Ok(response);
         }
 
         [HttpGet, Authorize]
@@ -88,15 +93,6 @@ namespace SeanProfile.Api.Controllers
             SetRefreshToken(newRefreshToken);
 
             return Ok(token);
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using(var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
         }
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
