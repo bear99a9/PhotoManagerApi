@@ -6,7 +6,7 @@ namespace SeanProfile.Api.DataLayer
     {
         Task<bool> DeleteTodoById(int id);
         Task<IEnumerable<TodoModel>> GetAllTodos();
-        Task<IEnumerable<TodoModel>> GetTodobyId(int id);
+        Task<TodoModel> GetTodobyId(int id);
         Task<bool> UpdateTodoById(TodoModel todo);
         Task<bool> CreateTodo(TodoModel todo);
     }

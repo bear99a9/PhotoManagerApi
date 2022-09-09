@@ -66,6 +66,21 @@ namespace SeanProfile.Api.Controllers
 
         }
 
+        [HttpPost("change-password"), Authorize]
+        public async Task<IActionResult> ChangePassword(UserChangePassword request)
+        {
+            request.Id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            
+            var response = await _authService.ChangePassword(request);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
         [HttpPost("refresh-token")]
         public async Task<ActionResult<string>> RefreshToken()
         {

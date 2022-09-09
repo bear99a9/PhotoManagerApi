@@ -79,6 +79,43 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
+        public async Task<UserModel> GetUserById<T>(T user)
+        {
+            try
+            {
+                var sql = @"SELECT * FROM [user] WHERE Id = @Id ";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.QueryFirstOrDefaultAsync<UserModel>(sql, user);
+                    return result;
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task UpdateUserPassword(UserModel user)
+        {
+            try
+            {
+                var sql = @"UPDATE [user] SET PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt WHERE Id = @Id";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.ExecuteAsync(sql, user);
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
     }
 }

@@ -64,6 +64,26 @@ namespace SeanProfile.Api.Services
             return new ServiceResponse<string> { Data = CreateToken(user), Message = "User logged in successfully" };
         }
 
+        public async Task<ServiceResponse<bool>> ChangePassword(UserChangePassword changePassword)
+        {
+            var user = await _userRepo.GetUserById<UserChangePassword>(changePassword);
+
+            if (user == null)
+            {
+                return new ServiceResponse<bool> { Success = false, Message = "User not found" };
+            }
+
+            CreatePasswordHash(changePassword.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            await _userRepo.UpdateUserPassword(user);
+
+            return new ServiceResponse<bool> { Success = true, Message = "Password changed successfully" };
+        }
+
+
         private async Task<bool> UserExists(string email)
         {
             return await _userRepo.UserExists(email.ToLower());

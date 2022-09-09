@@ -1,10 +1,13 @@
-using SeanProfile.Api.DataLayer;
+global using SeanProfile.Api.DataLayer;
+global using SeanProfile.Api.Model;
+global using SeanProfile.Api.Services;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using SeanProfile.Api.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +29,9 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();

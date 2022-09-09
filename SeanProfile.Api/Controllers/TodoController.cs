@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SeanProfile.Api.DataLayer;
-using SeanProfile.Api.Model;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SeanProfile.Api.Controllers
@@ -11,11 +9,11 @@ namespace SeanProfile.Api.Controllers
     [Authorize]
     public class TodoController : Controller
     {
-        private readonly ITodoRepository _todoRepository;
+        private readonly ITodoService _todoService;
 
-        public TodoController(ITodoRepository todoRepository)
+        public TodoController(ITodoService todoService)
         {
-            _todoRepository = todoRepository;
+            _todoService = todoService;
         }
         
         [HttpGet("GetAllTodos"), AllowAnonymous]
@@ -23,7 +21,7 @@ namespace SeanProfile.Api.Controllers
         {
             try
             {
-                var response = await _todoRepository.GetAllTodos();
+                var response = await _todoService.GetAllTodos();
                 return Ok(response);
             }
             catch (Exception ex)
@@ -32,12 +30,12 @@ namespace SeanProfile.Api.Controllers
             }
         }
 
-        [HttpGet("GetTodoById/{id}"), Authorize(Roles = "Admin")]
+        [HttpGet("GetTodoById/{id}")]
         public async Task<IActionResult> GetTodoById(int id)
         {
             try
             {
-                var response = await _todoRepository.GetTodobyId(id);
+                var response = await _todoService.GetTodoById(id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -51,7 +49,7 @@ namespace SeanProfile.Api.Controllers
         {
             try
             {
-                var response = await _todoRepository.DeleteTodoById(id);
+                var response = await _todoService.DeleteTodoById(id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -65,7 +63,7 @@ namespace SeanProfile.Api.Controllers
         {
             try
             {
-                var response = await _todoRepository.UpdateTodoById(request);
+                var response = await _todoService.UpdateTodoById(request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -79,7 +77,7 @@ namespace SeanProfile.Api.Controllers
         {
             try
             {
-                var response = await _todoRepository.CreateTodo(request);
+                var response = await _todoService.CreateTodo(request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -87,9 +85,5 @@ namespace SeanProfile.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-
-
     }
 }

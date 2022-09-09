@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using Dapper;
-using SeanProfile.Api.Model;
 
 namespace SeanProfile.Api.DataLayer
 {
@@ -39,7 +38,7 @@ namespace SeanProfile.Api.DataLayer
                 throw;
             }
         }
-        public async Task<IEnumerable<TodoModel>> GetTodobyId(int id)
+        public async Task<TodoModel> GetTodobyId(int id)
         {
             try
             {
@@ -47,9 +46,7 @@ namespace SeanProfile.Api.DataLayer
 
                 using (var connection = GetOpenConnection())
                 {
-                    var result = await connection.QueryAsync<TodoModel>(sql, new { id });
-
-                    return result;
+                    return await connection.QueryFirstOrDefaultAsync<TodoModel>(sql, new { id });
                 }
             }
             catch (Exception)
