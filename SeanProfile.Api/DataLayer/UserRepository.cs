@@ -40,16 +40,17 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
-        public async Task InsertNewUser(UserModel user)
+        public async Task<int> InsertNewUser(UserModel user)
         {
             try
             {
                 var sql = @"INSERT INTO [user] (Username, FirstName, LastName, Role, Email, PasswordHash, PasswordSalt)
+                            OUTPUT INSERTED.Id
                         VALUES (@Username, @FirstName, @LastName, @Role, @Email, @PasswordHash, @PasswordSalt)";
 
                 using (var connection = GetOpenConnection())
                 {
-                    var result = await connection.ExecuteAsync(sql, user);
+                    return await connection.QueryFirstOrDefaultAsync<int>(sql, user);
 
                 }
             }

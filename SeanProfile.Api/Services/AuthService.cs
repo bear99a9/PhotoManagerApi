@@ -25,7 +25,8 @@ namespace SeanProfile.Api.Services
 
         public async Task<ServiceResponse<int>> Register(UserModel user)
         {
-            if (await UserExists(user.Email))
+            var isUserRegistered = await _userRepo.UserExists(user.Email.ToLower());
+            if (isUserRegistered)
             {
                 return new ServiceResponse<int> { Success = false, Message = "Email address already exists" };
             }
@@ -37,9 +38,7 @@ namespace SeanProfile.Api.Services
             user.Role = "Guest";
             user.Email = user.Email.ToLower();
             
-            await _userRepo.InsertNewUser(user);
-
-            user = await _userRepo.GetUserByEmail(user);
+            user.Id = await _userRepo.InsertNewUser(user);
 
             return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
         }
@@ -81,12 +80,6 @@ namespace SeanProfile.Api.Services
             await _userRepo.UpdateUserPassword(user);
 
             return new ServiceResponse<bool> { Success = true, Message = "Password changed successfully" };
-        }
-
-
-        private async Task<bool> UserExists(string email)
-        {
-            return await _userRepo.UserExists(email.ToLower());
         }
 
 
