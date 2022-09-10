@@ -83,7 +83,7 @@ namespace SeanProfile.Api.Services
         }
 
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -93,7 +93,7 @@ namespace SeanProfile.Api.Services
             }
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
@@ -105,7 +105,7 @@ namespace SeanProfile.Api.Services
 
         private string CreateToken(UserModel user)
         {
-            List<Claim> claims = new List<Claim>
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
@@ -127,7 +127,7 @@ namespace SeanProfile.Api.Services
             return jwt;
         }
 
-        private RefreshToken GenerateRefreshToken()
+        private static RefreshToken GenerateRefreshToken()
         {
             var refreshToken = new RefreshToken
             {

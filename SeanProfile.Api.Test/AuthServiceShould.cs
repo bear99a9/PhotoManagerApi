@@ -30,7 +30,7 @@ namespace SeanProfile.Api.Test
         public async Task NotRegisterExsitingUser()
         {
             // Assign
-            var user = _fixture.Build<UserModel>().With(x => x.Email, "seanedwardsphysio@gmail.com").Create();
+            var user = _fixture.Build<UserModel>().With(x => x.Email,"test@test.com").Create();
 
             _mockUserRepo.Setup(x => x.UserExists(user.Email)).ReturnsAsync(true);
 
@@ -163,6 +163,52 @@ namespace SeanProfile.Api.Test
             Assert.Equal(expected.Message, actual.Message);
             Assert.False(actual.Success);
             Assert.Equal(expected.Data, actual.Data);
+        }
+
+        [Fact]
+        public async Task NotChangePasswordsOfUnRegisteredUsers()
+        {
+            // Assign
+            var changePassword = _fixture.Create<UserChangePassword>();
+
+            _mockUserRepo.Setup(x => x.GetUserById<UserChangePassword>(changePassword)).ReturnsAsync(() => null);
+
+            // Act
+            var actual = await _sut.ChangePassword(changePassword);
+
+            var expected = new ServiceResponse<string>()
+            {
+                Success = false,
+                Message = "User not found"
+            };
+
+            //Assert
+            Assert.Equal(expected.Message, actual.Message);
+            Assert.False(actual.Success);
+        }
+
+        [Fact]
+        public async Task ChangePasswordsOfRegisteredUsers()
+        {
+            // Assign
+            var changePassword = _fixture.Create<UserChangePassword>();
+
+            var user = _fixture.Create<UserModel>();
+
+            _mockUserRepo.Setup(x => x.GetUserById<UserChangePassword>(changePassword)).ReturnsAsync(() => user);
+
+            // Act
+            var actual = await _sut.ChangePassword(changePassword);
+
+            var expected = new ServiceResponse<string>()
+            {
+                Success = true,
+                Message = "Password changed successfully"
+            };
+
+            //Assert
+            Assert.Equal(expected.Message, actual.Message);
+            Assert.True(actual.Success);
         }
 
     }
