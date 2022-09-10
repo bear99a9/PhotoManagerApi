@@ -4,10 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SeanProfile.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class TodoController : Controller
+    public class TodoController : BaseController
     {
         private readonly ITodoService _todoService;
 

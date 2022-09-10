@@ -14,7 +14,7 @@ namespace SeanProfile.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public static UserModel user = new UserModel();
+        private static UserModel _user = new();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
@@ -82,20 +82,20 @@ namespace SeanProfile.Api.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<string>> RefreshToken()
+        public ActionResult<string> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
 
-            if (!user.RefreshToken.Equals(refreshToken))
+            if (!_user.RefreshToken.Equals(refreshToken))
             {
                 return Unauthorized("Invalid Refresh Token.");
             }
-            else if (user.TokenExpires < DateTime.Now)
+            else if (_user.TokenExpires < DateTime.Now)
             {
                 return Unauthorized("Token expired.");
             }
 
-            string token = CreateToken(user);
+            string token = CreateToken(_user);
             var newRefreshToken = GenerateRefreshToken();
             SetRefreshToken(newRefreshToken);
 
@@ -105,7 +105,7 @@ namespace SeanProfile.Api.Controllers
 
         private string CreateToken(UserModel user)
         {
-            List<Claim> claims = new List<Claim>
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, "Admin")
@@ -135,12 +135,12 @@ namespace SeanProfile.Api.Controllers
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
 
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
+            _user.RefreshToken = newRefreshToken.Token;
+            _user.TokenCreated = newRefreshToken.Created;
+            _user.TokenExpires = newRefreshToken.Expires;
         }
 
-        private RefreshToken GenerateRefreshToken()
+        private static RefreshToken GenerateRefreshToken()
         {
             var refreshToken = new RefreshToken
             {
