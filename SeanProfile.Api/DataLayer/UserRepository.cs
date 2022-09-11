@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using SeanProfile.Api.Model;
 using System.Data;
 using System.Data.SqlClient;
@@ -7,16 +8,15 @@ namespace SeanProfile.Api.DataLayer
 {
     public class UserRepository : IUserRepository
     {
-        private string _ConnString;
-
-        public UserRepository()
+        private readonly AppSettingsModel _appSettings;
+        public UserRepository(IOptions<AppSettingsModel> options)
         {
-            _ConnString = "Server = (localdb)\\mssqllocaldb; Database = SeanProfileDB; Trusted_Connection = True; MultipleActiveResultSets = true";
+            _appSettings = options.Value;
         }
 
         private IDbConnection GetOpenConnection()
         {
-            var connection = new SqlConnection(_ConnString);
+            var connection = new SqlConnection(_appSettings.SqlConnection);
             connection.Open();
             return connection;
         }

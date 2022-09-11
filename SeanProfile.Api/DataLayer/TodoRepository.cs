@@ -1,21 +1,22 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using Dapper;
+using Microsoft.Extensions.Options;
 
 namespace SeanProfile.Api.DataLayer
 {
     public class TodoRepository : ITodoRepository
     {
-        private readonly string _ConnString;
+        private readonly AppSettingsModel _appSettings;
 
-        public TodoRepository()
+        public TodoRepository(IOptions<AppSettingsModel> options)
         {
-            _ConnString = "Server = (localdb)\\mssqllocaldb; Database = SeanProfileDB; Trusted_Connection = True; MultipleActiveResultSets = true";
+            _appSettings = options.Value;
         }
 
         private IDbConnection GetOpenConnection()
         {
-            var connection = new SqlConnection(_ConnString);
+            var connection = new SqlConnection(_appSettings.SqlConnection);
             connection.Open();
             return connection;
         }

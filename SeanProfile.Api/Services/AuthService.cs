@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SeanProfile.Api.DataLayer;
 using SeanProfile.Api.Model;
@@ -13,12 +14,12 @@ namespace SeanProfile.Api.Services
 {
     public class AuthService : IAuthService
     {
-        public readonly IConfiguration _configuration;
+        private readonly AppSettingsModel _appSettings;
         private readonly IUserRepository _userRepo;
 
-        public AuthService(IConfiguration configuration, IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IOptions<AppSettingsModel> options)
         {
-            _configuration = configuration;
+            _appSettings = options.Value;
             _userRepo = userRepository;
         }
 
@@ -113,7 +114,7 @@ namespace SeanProfile.Api.Services
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-                .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+                .GetBytes(_appSettings.Token));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

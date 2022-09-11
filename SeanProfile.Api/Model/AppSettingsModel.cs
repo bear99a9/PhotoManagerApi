@@ -3,7 +3,10 @@
     public class AppSettingsModel
     {
         public const string SectionName = "AppSettings";
-        public string Secret { get; set; } = string.Empty;
-        public string ConnectionString { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
+        public string BlobConnString { get; set; } = string.Empty;
+        public string BlobContainer { get; set; } = string.Empty;
+        public string SqlConnection { get; set; } = string.Empty;
+
     }
 }

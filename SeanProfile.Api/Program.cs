@@ -34,6 +34,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+
+builder.Services.Configure<AppSettingsModel>(builder.Configuration.GetSection(AppSettingsModel.SectionName));
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options =>

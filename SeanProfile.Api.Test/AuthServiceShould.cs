@@ -1,5 +1,6 @@
 using AutoFixture;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using SeanProfile.Api.DataLayer;
 using SeanProfile.Api.Model;
@@ -14,16 +15,26 @@ namespace SeanProfile.Api.Test
         private readonly IConfigurationRoot _configuration;
         private readonly Mock<IUserRepository> _mockUserRepo;
         private readonly AuthService _sut;
-        private Fixture _fixture;
+        private readonly Fixture _fixture;
+        private readonly Mock<IOptions<AppSettingsModel>> _appsettings;
 
         public AuthServiceShould()
         {
+
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json", optional: false)
                 .Build();
+            _appsettings = new Mock<IOptions<AppSettingsModel>>();
+            _appsettings.Setup(x => x.Value).Returns(new AppSettingsModel
+            {
+                SqlConnection = _configuration.GetValue<string>("AppSettings:SqlConnection"),
+                BlobConnString = _configuration.GetValue<string>("AppSettings:BlobConnString"),
+                BlobContainer = _configuration.GetValue<string>("AppSettings:BlobContainer"),
+                Token = _configuration.GetValue<string>("AppSettings:Token")
+            });
             _mockUserRepo = new Mock<IUserRepository>();
             _fixture = new Fixture();
-            _sut = new AuthService(_configuration, _mockUserRepo.Object);
+            _sut = new AuthService(_mockUserRepo.Object, _appsettings.Object);
         }
 
         [Fact]
@@ -91,9 +102,9 @@ namespace SeanProfile.Api.Test
                 Password = "test123",
             };
                 
-            var userRepo = new UserRepository();
+            var userRepo = new UserRepository(_appsettings.Object);
 
-            var sut = new AuthService(_configuration, userRepo);
+            var sut = new AuthService(userRepo, _appsettings.Object);
             // Act
             var actual = await sut.Login(userLogin);
 
@@ -119,9 +130,9 @@ namespace SeanProfile.Api.Test
                 Password = "test123NotCorrect",
             };
 
-            var userRepo = new UserRepository();
+            var userRepo = new UserRepository(_appsettings.Object);
 
-            var sut = new AuthService(_configuration, userRepo);
+            var sut = new AuthService(userRepo, _appsettings.Object);
             // Act
             var actual = await sut.Login(userLogin);
 
@@ -147,9 +158,9 @@ namespace SeanProfile.Api.Test
                 Password = "test123NotCorrect",
             };
 
-            var userRepo = new UserRepository();
+            var userRepo = new UserRepository(_appsettings.Object);
 
-            var sut = new AuthService(_configuration, userRepo);
+            var sut = new AuthService(userRepo, _appsettings.Object);
             // Act
             var actual = await sut.Login(userLogin);
 
