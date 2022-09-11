@@ -25,7 +25,7 @@ namespace SeanProfile.Api.Controllers
         }
 
         [HttpPost("upload-file"), AllowAnonymous]
-        public async Task<IActionResult> PostFile([FromForm] IEnumerable<IFormFile> files)
+        public async Task<IActionResult> SaveFile([FromForm] IEnumerable<IFormFile> files)
         {
             var maxAllowedFiles = 3;
             long maxFileSize = 1024 * 15;

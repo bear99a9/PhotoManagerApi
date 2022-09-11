@@ -34,7 +34,7 @@ namespace SeanProfile.Api.DataLayer
 
         }
 
-        public async Task<string> UploadBinary(BlobContainerClient container, IFormFile file, string fileName)
+        public async Task<string> UploadBinary(BlobContainerClient container, IFormFile file, string fileName, string contentType)
         {
             try
             {

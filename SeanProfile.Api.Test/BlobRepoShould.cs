@@ -9,12 +9,12 @@ using Xunit;
 
 namespace SeanProfile.Api.Test
 {
-    public class BlobReposShould
+    public class BlobRepoShould
     {
         private readonly IConfigurationRoot _configuration;
         private readonly Mock<IOptions<AppSettingsModel>> _appsettings;
 
-        public BlobReposShould()
+        public BlobRepoShould()
         {
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json", optional: false)
