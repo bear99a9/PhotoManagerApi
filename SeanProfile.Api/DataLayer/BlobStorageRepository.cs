@@ -46,7 +46,7 @@ namespace SeanProfile.Api.DataLayer
                     stream,
                     new BlobHttpHeaders
                     {
-                        ContentType = "application/pdf"
+                        ContentType = $"image/{contentType}"
                     });
 
                 var uri = GetServiceSasUriForBlob(blobClient);

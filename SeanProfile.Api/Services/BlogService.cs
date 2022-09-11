@@ -1,19 +1,14 @@
-﻿using Microsoft.Extensions.Options;
-using System.Net;
-
-namespace SeanProfile.Api.Services
+﻿namespace SeanProfile.Api.Services
 {
     public class BlogService : IBlogService
     {
         private readonly AppSettingsModel _appSettings;
-        private readonly IWebHostEnvironment _env;
-        private readonly BlobStorageRepository _blobStorageRepository;
+        private readonly IBlobStorageRepository _blobStorageRepository;
 
-        public BlogService(IOptions<AppSettingsModel> options, IWebHostEnvironment env,
-            BlobStorageRepository blobStorageRepository)
+        public BlogService(IOptions<AppSettingsModel> options,
+            IBlobStorageRepository blobStorageRepository)
         {
             _appSettings = options.Value;
-            _env = env;
             _blobStorageRepository = blobStorageRepository;
         }
 
@@ -30,8 +25,7 @@ namespace SeanProfile.Api.Services
                     string trustedFileNameForFileStorage;
                     var untrustedFileName = file.FileName;
                     uploadResult.FileName = untrustedFileName;
-                    var trustedFileNameForDisplay =
-                        WebUtility.HtmlEncode(untrustedFileName);
+                    var trustedFileNameForDisplay = untrustedFileName;
 
                     if (filesProcessed < _appSettings.MaxAllowedFiles)
                     {
@@ -51,14 +45,7 @@ namespace SeanProfile.Api.Services
 
                                 if (!string.IsNullOrWhiteSpace(pictureType))
                                 {
-
                                     trustedFileNameForFileStorage = $"{Guid.NewGuid()}.{pictureType}";
-                                    var path = Path.Combine(_env.ContentRootPath,
-                                        "Images", "unsafe_uploads",
-                                        trustedFileNameForFileStorage);
-
-                                    await using FileStream fs = new(path, FileMode.Create);
-                                    await file.CopyToAsync(fs);
 
                                     var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
                                     var blobUri = await _blobStorageRepository.UploadBinary(blobContainerClient, file, trustedFileNameForFileStorage, pictureType);

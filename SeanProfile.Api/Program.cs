@@ -1,6 +1,7 @@
 global using SeanProfile.Api.DataLayer;
 global using SeanProfile.Api.Model;
 global using SeanProfile.Api.Services;
+global using Microsoft.Extensions.Options;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -29,14 +30,15 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+builder.Services.Configure<AppSettingsModel>(builder.Configuration.GetSection(AppSettingsModel.SectionName));
+
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
-
-builder.Services.Configure<AppSettingsModel>(builder.Configuration.GetSection(AppSettingsModel.SectionName));
+builder.Services.AddScoped<IBlobStorageRepository, BlobStorageRepository>();
+builder.Services.AddScoped<IBlogService, BlogService>();
 
 builder.Services.AddHttpContextAccessor();
 
