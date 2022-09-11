@@ -12,65 +12,57 @@
             _blobStorageRepository = blobStorageRepository;
         }
 
-        public async Task<ServiceResponse<IList<UploadResult>>> SaveFile(IEnumerable<IFormFile> files)
+        public async Task<ServiceResponse<IList<BlogModel>>> SaveFile(IEnumerable<IFormFile> files)
         {
             try
             {
                 var filesProcessed = 0;
-                List<UploadResult> uploadResults = new();
+                List<BlogModel> uploadResults = new();
 
                 foreach (var file in files)
                 {
-                    var uploadResult = new UploadResult();
+                    var uploadResult = new BlogModel();
                     string trustedFileNameForFileStorage;
                     var untrustedFileName = file.FileName;
-                    uploadResult.FileName = untrustedFileName;
                     var trustedFileNameForDisplay = untrustedFileName;
 
-                    if (filesProcessed < _appSettings.MaxAllowedFiles)
+                    if (file.Length == 0)
                     {
-                        if (file.Length == 0)
-                        {
-                            uploadResult.ErrorCode = 1;
-                        }
-                        else if (file.Length > _appSettings.MaxFileSize)
-                        {
-                            uploadResult.ErrorCode = 2;
-                        }
-                        else
-                        {
-                            try
-                            {
-                                var pictureType = file.FileName.Split(".").LastOrDefault();
-
-                                if (!string.IsNullOrWhiteSpace(pictureType))
-                                {
-                                    trustedFileNameForFileStorage = $"{Guid.NewGuid()}.{pictureType}";
-
-                                    var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
-                                    var blobUri = await _blobStorageRepository.UploadBinary(blobContainerClient, file, trustedFileNameForFileStorage, pictureType);
-                                    uploadResult.Uploaded = true;
-                                    uploadResult.StoredFileName = trustedFileNameForFileStorage;
-                                }
-                            }
-                            catch (IOException)
-                            {
-                                uploadResult.ErrorCode = 3;
-                            }
-                        }
-
-                        filesProcessed++;
+                        throw new Exception("File length is 0");
+                    }
+                    else if (file.Length > _appSettings.MaxFileSize)
+                    {
+                        throw new Exception("File size is over max");
                     }
                     else
                     {
-                        uploadResult.ErrorCode = 4;
+                        try
+                        {
+                            var pictureType = file.FileName.Split(".").LastOrDefault();
+
+                            if (!string.IsNullOrWhiteSpace(pictureType))
+                            {
+                                trustedFileNameForFileStorage = $"{Guid.NewGuid()}.{pictureType}";
+
+                                var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
+                                var blobUri = await _blobStorageRepository.UploadBinary(blobContainerClient, file, trustedFileNameForFileStorage, pictureType);
+
+                                uploadResult.Image.Url = blobUri;
+                            }
+                        }
+                        catch (IOException)
+                        {
+                            throw;
+                        }
+                        filesProcessed++;
+
                     }
 
                     uploadResults.Add(uploadResult);
                 }
 
                 // var response = new CreatedResult(resourcePath, uploadResults);
-                var response = new ServiceResponse<IList<UploadResult>>()
+                var response = new ServiceResponse<IList<BlogModel>>()
                 {
                     Data = uploadResults,
                     Success = true,
