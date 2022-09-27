@@ -2,6 +2,7 @@ global using SeanProfile.Api.DataLayer;
 global using SeanProfile.Api.Model;
 global using SeanProfile.Api.Services;
 global using Microsoft.Extensions.Options;
+global using SeanProfile.Helpers;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

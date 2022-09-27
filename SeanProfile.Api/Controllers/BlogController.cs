@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace SeanProfile.Api.Controllers
 {
@@ -24,9 +16,22 @@ namespace SeanProfile.Api.Controllers
         [HttpPost("upload-file"), AllowAnonymous]
         public async Task<IActionResult> SaveFile([FromForm] IEnumerable<IFormFile> files)
         {
-            var response = await _blogService.SaveFile(files);
+            try
+            {
 
-            return Ok(response);
+                var response = await _blogService.SaveFile(files);
+
+                return Ok(response);
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
         }
     }
 

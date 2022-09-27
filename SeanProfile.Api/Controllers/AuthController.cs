@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SeanProfile.Api.Model;
-using SeanProfile.Api.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -30,18 +27,29 @@ namespace SeanProfile.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(UserRegister request)
         {
-            var response = await _authService.Register( new UserModel
+            try
             {
-                Email = request.Email,
-                Password = request.Password
-            });
+                var response = await _authService.Register(new UserModel
+                {
+                    Email = request.Email,
+                    Password = request.Password
+                });
 
-            if (!response.Success)
-            {
-                return BadRequest(response);
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
             }
-
-            return Ok(response);
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpGet, Authorize]
@@ -54,31 +62,53 @@ namespace SeanProfile.Api.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLogin request)
         {
-            var response = await _authService.Login(request);
-
-            if (!response.Success)
+            try
             {
-                return BadRequest(response);
+                var response = await _authService.Login(request);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
             }
-
-
-            return Ok(response);
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
 
         }
 
         [HttpPost("change-password"), Authorize]
         public async Task<IActionResult> ChangePassword(UserChangePassword request)
         {
-            request.Id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            
-            var response = await _authService.ChangePassword(request);
-
-            if (!response.Success)
+            try
             {
-                return BadRequest(response);
+                request.Id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var response = await _authService.ChangePassword(request);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
 
-            return Ok(response);
         }
 
         [HttpPost("refresh-token")]

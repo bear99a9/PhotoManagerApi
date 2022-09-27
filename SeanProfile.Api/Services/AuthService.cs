@@ -26,61 +26,89 @@ namespace SeanProfile.Api.Services
 
         public async Task<ServiceResponse<int>> Register(UserModel user)
         {
-            var isUserRegistered = await _userRepo.UserExists(user.Email.ToLower());
-            if (isUserRegistered)
+            try
             {
-                return new ServiceResponse<int> { Success = false, Message = "Email address already exists" };
+                var isUserRegistered = await _userRepo.UserExists(user.Email.ToLower());
+                if (isUserRegistered)
+                {
+                    return new ServiceResponse<int> { Success = false, Message = "Email address already exists" };
+                }
+
+                CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                user.Role = "Guest";
+                user.Email = user.Email.ToLower();
+
+                user.Id = await _userRepo.InsertNewUser(user);
+
+                return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
 
-            CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.Role = "Guest";
-            user.Email = user.Email.ToLower();
-            
-            user.Id = await _userRepo.InsertNewUser(user);
-
-            return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
         }
 
         public async Task<ServiceResponse<string>> Login(UserLogin userLogin)
         {
-           
-            userLogin.Email = userLogin.Email.ToLower();
-            
-            var user = await _userRepo.GetUserByEmail<UserLogin>(userLogin);
-
-            if (user == null)
+            try
             {
-                return new ServiceResponse<string> { Success = false, Message = "User not found" };
-            }
 
-            if (!VerifyPasswordHash(userLogin.Password, user.PasswordHash, user.PasswordSalt))
+                userLogin.Email = userLogin.Email.ToLower();
+
+                var user = await _userRepo.GetUserByEmail<UserLogin>(userLogin);
+
+                if (user == null)
+                {
+                    return new ServiceResponse<string> { Success = false, Message = "User not found" };
+                }
+
+                if (!VerifyPasswordHash(userLogin.Password, user.PasswordHash, user.PasswordSalt))
+                {
+                    return new ServiceResponse<string> { Success = false, Message = "Password is incorrect" };
+                }
+
+                return new ServiceResponse<string> { Data = CreateToken(user), Message = "User logged in successfully" };
+            }
+            catch (Exception)
             {
-                return new ServiceResponse<string> { Success = false, Message = "Password is incorrect" };
-            }
 
-            return new ServiceResponse<string> { Data = CreateToken(user), Message = "User logged in successfully" };
+                throw;
+            }
         }
+
 
         public async Task<ServiceResponse<bool>> ChangePassword(UserChangePassword changePassword)
         {
-            var user = await _userRepo.GetUserById<UserChangePassword>(changePassword);
-
-            if (user == null)
+            try
             {
-                return new ServiceResponse<bool> { Success = false, Message = "User not found" };
+
+                var user = await _userRepo.GetUserById<UserChangePassword>(changePassword);
+
+                if (user == null)
+                {
+                    return new ServiceResponse<bool> { Success = false, Message = "User not found" };
+                }
+
+                CreatePasswordHash(changePassword.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+
+                await _userRepo.UpdateUserPassword(user);
+
+                return new ServiceResponse<bool> { Success = true, Message = "Password changed successfully" };
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
 
-            CreatePasswordHash(changePassword.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-
-            await _userRepo.UpdateUserPassword(user);
-
-            return new ServiceResponse<bool> { Success = true, Message = "Password changed successfully" };
         }
 
 
