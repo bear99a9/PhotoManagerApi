@@ -1,18 +1,18 @@
 ﻿namespace SeanProfile.Api.Services
 {
-    public class BlogService : IBlogService
+    public class UploadService : IUploadService
     {
         private readonly AppSettingsModel _appSettings;
         private readonly IBlobStorageRepository _blobStorageRepository;
 
-        public BlogService(IOptions<AppSettingsModel> options,
+        public UploadService(IOptions<AppSettingsModel> options,
             IBlobStorageRepository blobStorageRepository)
         {
             _appSettings = options.Value;
             _blobStorageRepository = blobStorageRepository;
         }
 
-        public async Task<ServiceResponse<IList<string>>> SaveFile(IEnumerable<IFormFile> files)
+        public async Task<ServiceResponseModel<IList<string>>> SaveFile(IEnumerable<IFormFile> files)
         {
             try
             {
@@ -62,12 +62,14 @@
 
                     uploadResults.Add(uploadResult);
                 }
+                var message = files.Count().Equals(1) ?
+                    "The image has been successfully uploaded" : "The images have been successfully uploaded";
 
-                var response = new ServiceResponse<IList<string>>()
+                var response = new ServiceResponseModel<IList<string>>()
                 {
                     Data = urls,
                     Success = true,
-                    Message = "Files has been uploaded"
+                    Message = message
                 };
 
                 return response;

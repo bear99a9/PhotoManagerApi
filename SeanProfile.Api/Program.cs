@@ -40,7 +40,7 @@ builder.Services.AddScoped<ITodoService, TodoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBlobStorageRepository, BlobStorageRepository>();
-builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<IUploadService, UploadService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -88,13 +88,6 @@ app.UseAuthorization();
 
 
 app.UseCors("Open");
-
-app.UseStaticFiles();
-app.UseStaticFiles(new StaticFileOptions()
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
-    RequestPath = new PathString("/Resources")
-});
 
 app.MapControllers();
 

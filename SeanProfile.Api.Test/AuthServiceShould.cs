@@ -48,7 +48,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await _sut.Register(user);
 
-            var expected = new ServiceResponse<int>()
+            var expected = new ServiceResponseModel<int>()
             {
                 Success = false,
                 Message = "Email address already exists"
@@ -79,7 +79,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await _sut.Register(user);
 
-            var expected = new ServiceResponse<int>()
+            var expected = new ServiceResponseModel<int>()
             {
                 Data = 3,
                 Success = true,
@@ -108,7 +108,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await sut.Login(userLogin);
 
-            var expected = new ServiceResponse<string>()
+            var expected = new ServiceResponseModel<string>()
             {
                 Success = true,
                 Message = "User logged in successfully"
@@ -136,7 +136,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await sut.Login(userLogin);
 
-            var expected = new ServiceResponse<string>()
+            var expected = new ServiceResponseModel<string>()
             {
                 Success = false,
                 Message = "Password is incorrect"
@@ -164,7 +164,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await sut.Login(userLogin);
 
-            var expected = new ServiceResponse<string>()
+            var expected = new ServiceResponseModel<string>()
             {
                 Success = false,
                 Message = "User not found"
@@ -187,7 +187,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await _sut.ChangePassword(changePassword);
 
-            var expected = new ServiceResponse<string>()
+            var expected = new ServiceResponseModel<string>()
             {
                 Success = false,
                 Message = "User not found"
@@ -211,7 +211,7 @@ namespace SeanProfile.Api.Test
             // Act
             var actual = await _sut.ChangePassword(changePassword);
 
-            var expected = new ServiceResponse<string>()
+            var expected = new ServiceResponseModel<string>()
             {
                 Success = true,
                 Message = "Password changed successfully"

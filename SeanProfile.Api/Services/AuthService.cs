@@ -24,14 +24,14 @@ namespace SeanProfile.Api.Services
         }
 
 
-        public async Task<ServiceResponse<int>> Register(UserModel user)
+        public async Task<ServiceResponseModel<int>> Register(UserModel user)
         {
             try
             {
                 var isUserRegistered = await _userRepo.UserExists(user.Email.ToLower());
                 if (isUserRegistered)
                 {
-                    return new ServiceResponse<int> { Success = false, Message = "Email address already exists" };
+                    return new ServiceResponseModel<int> { Success = false, Message = "Email address already exists" };
                 }
 
                 CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -43,7 +43,7 @@ namespace SeanProfile.Api.Services
 
                 user.Id = await _userRepo.InsertNewUser(user);
 
-                return new ServiceResponse<int> { Data = user.Id, Message = "User added successfully" };
+                return new ServiceResponseModel<int> { Data = user.Id, Message = "User added successfully" };
             }
             catch (Exception)
             {
@@ -53,7 +53,7 @@ namespace SeanProfile.Api.Services
 
         }
 
-        public async Task<ServiceResponse<string>> Login(UserLogin userLogin)
+        public async Task<ServiceResponseModel<string>> Login(UserLogin userLogin)
         {
             try
             {
@@ -64,15 +64,15 @@ namespace SeanProfile.Api.Services
 
                 if (user == null)
                 {
-                    return new ServiceResponse<string> { Success = false, Message = "User not found" };
+                    return new ServiceResponseModel<string> { Success = false, Message = "User not found" };
                 }
 
                 if (!VerifyPasswordHash(userLogin.Password, user.PasswordHash, user.PasswordSalt))
                 {
-                    return new ServiceResponse<string> { Success = false, Message = "Password is incorrect" };
+                    return new ServiceResponseModel<string> { Success = false, Message = "Password is incorrect" };
                 }
 
-                return new ServiceResponse<string> { Data = CreateToken(user), Message = "User logged in successfully" };
+                return new ServiceResponseModel<string> { Data = CreateToken(user), Message = "User logged in successfully" };
             }
             catch (Exception)
             {
@@ -82,7 +82,7 @@ namespace SeanProfile.Api.Services
         }
 
 
-        public async Task<ServiceResponse<bool>> ChangePassword(UserChangePassword changePassword)
+        public async Task<ServiceResponseModel<bool>> ChangePassword(UserChangePassword changePassword)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace SeanProfile.Api.Services
 
                 if (user == null)
                 {
-                    return new ServiceResponse<bool> { Success = false, Message = "User not found" };
+                    return new ServiceResponseModel<bool> { Success = false, Message = "User not found" };
                 }
 
                 CreatePasswordHash(changePassword.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -101,7 +101,7 @@ namespace SeanProfile.Api.Services
 
                 await _userRepo.UpdateUserPassword(user);
 
-                return new ServiceResponse<bool> { Success = true, Message = "Password changed successfully" };
+                return new ServiceResponseModel<bool> { Success = true, Message = "Password changed successfully" };
             }
             catch (Exception)
             {
