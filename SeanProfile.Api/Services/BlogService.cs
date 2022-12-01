@@ -12,12 +12,14 @@
             _blobStorageRepository = blobStorageRepository;
         }
 
-        public async Task<ServiceResponse<IList<BlogModel>>> SaveFile(IEnumerable<IFormFile> files)
+        public async Task<ServiceResponse<IList<string>>> SaveFile(IEnumerable<IFormFile> files)
         {
             try
             {
                 var filesProcessed = 0;
                 List<BlogModel> uploadResults = new();
+                List<string> urls = new();
+                var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
 
                 foreach (var file in files)
                 {
@@ -30,10 +32,10 @@
                     {
                         throw new Exception("File length is 0");
                     }
-                    else if (file.Length > _appSettings.MaxFileSize)
-                    {
-                        throw new Exception("File size is over max");
-                    }
+                    //else if (file.Length > _appSettings.MaxFileSize)
+                    //{
+                    //    throw new Exception("File size is over max");
+                    //}
                     else
                     {
                         try
@@ -44,10 +46,10 @@
                             {
                                 trustedFileNameForFileStorage = $"{Guid.NewGuid()}.{pictureType}";
 
-                                var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
                                 var blobUri = await _blobStorageRepository.UploadBinary(blobContainerClient, file, trustedFileNameForFileStorage, pictureType);
 
-                                uploadResult.Image.Url = blobUri;
+                                uploadResult.ImageUrl = blobUri;
+                                urls.Add(blobUri);  
                             }
                         }
                         catch (IOException)
@@ -61,12 +63,11 @@
                     uploadResults.Add(uploadResult);
                 }
 
-                // var response = new CreatedResult(resourcePath, uploadResults);
-                var response = new ServiceResponse<IList<BlogModel>>()
+                var response = new ServiceResponse<IList<string>>()
                 {
-                    Data = uploadResults,
+                    Data = urls,
                     Success = true,
-                    Message = "File has been uploaded"
+                    Message = "Files has been uploaded"
                 };
 
                 return response;

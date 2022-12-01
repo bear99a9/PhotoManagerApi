@@ -40,7 +40,7 @@ namespace SeanProfile.Api.DataLayer
             {
                 BlobClient blobClient = container.GetBlobClient(fileName);
 
-                Stream stream = file.OpenReadStream();//new MemoryStream(document.FileData);
+                Stream stream = file.OpenReadStream();
 
                 await blobClient.UploadAsync(
                     stream,
