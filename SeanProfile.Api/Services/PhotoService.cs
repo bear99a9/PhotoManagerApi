@@ -1,12 +1,12 @@
 ﻿namespace SeanProfile.Api.Services
 {
-    public class UploadService : IUploadService
+    public class PhotoService : IPhotoService
     {
         private readonly AppSettingsModel _appSettings;
         private readonly IBlobStorageRepository _blobStorageRepository;
         private readonly IPhotoRepository _photoRepository;
 
-        public UploadService(IOptions<AppSettingsModel> options,
+        public PhotoService(IOptions<AppSettingsModel> options,
             IBlobStorageRepository blobStorageRepository, IPhotoRepository photoRepository)
         {
             _appSettings = options.Value;
@@ -14,7 +14,7 @@
             _photoRepository = photoRepository;
         }
 
-        public async Task<ServiceResponseModel<IList<string>>> SaveFile(IEnumerable<IFormFile> files, int userId)
+        public async Task<ServiceResponseModel<IList<string>>> SavePhoto(IEnumerable<IFormFile> files, int userId)
         {
             try
             {

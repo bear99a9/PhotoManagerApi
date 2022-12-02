@@ -6,11 +6,11 @@ using System.Security.Claims;
 namespace SeanProfile.Api.Controllers
 {
 
-    public class UploadController : BaseController
+    public class PhotoController : BaseController
     {
-        private readonly IUploadService _blogService;
+        private readonly IPhotoService _blogService;
 
-        public UploadController(IUploadService blogService)
+        public PhotoController(IPhotoService blogService)
         {
             _blogService = blogService;
         }
@@ -30,7 +30,7 @@ namespace SeanProfile.Api.Controllers
 
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                var response = await _blogService.SaveFile(files, userId);
+                var response = await _blogService.SavePhoto(files, userId);
 
                 return Ok(response);
 
