@@ -4,38 +4,34 @@
     {
         private readonly AppSettingsModel _appSettings;
         private readonly IBlobStorageRepository _blobStorageRepository;
+        private readonly IPhotoRepository _photoRepository;
 
         public UploadService(IOptions<AppSettingsModel> options,
-            IBlobStorageRepository blobStorageRepository)
+            IBlobStorageRepository blobStorageRepository, IPhotoRepository photoRepository)
         {
             _appSettings = options.Value;
             _blobStorageRepository = blobStorageRepository;
+            _photoRepository = photoRepository;
         }
 
-        public async Task<ServiceResponseModel<IList<string>>> SaveFile(IEnumerable<IFormFile> files)
+        public async Task<ServiceResponseModel<IList<string>>> SaveFile(IEnumerable<IFormFile> files, int userId)
         {
             try
             {
-                var filesProcessed = 0;
-                List<BlogModel> uploadResults = new();
+                List<PhotoModel> photos = new();
                 List<string> urls = new();
                 var blobContainerClient = _blobStorageRepository.ConnectionStringAsync();
 
                 foreach (var file in files)
                 {
-                    var uploadResult = new BlogModel();
                     string trustedFileNameForFileStorage;
-                    var untrustedFileName = file.FileName;
-                    var trustedFileNameForDisplay = untrustedFileName;
+                    string untrustedFileName = file.FileName;
+                    string trustedFileNameForDisplay = untrustedFileName;
 
                     if (file.Length == 0)
                     {
-                        throw new Exception("File length is 0");
+                        throw new AppException("File length is 0");
                     }
-                    //else if (file.Length > _appSettings.MaxFileSize)
-                    //{
-                    //    throw new Exception("File size is over max");
-                    //}
                     else
                     {
                         try
@@ -48,20 +44,25 @@
 
                                 var blobUri = await _blobStorageRepository.UploadBinary(blobContainerClient, file, trustedFileNameForFileStorage, pictureType);
 
-                                uploadResult.ImageUrl = blobUri;
-                                urls.Add(blobUri);  
+                                urls.Add(blobUri);
+
+                                photos.Add(new()
+                                {
+                                    PhotoUrl = blobUri,
+                                    PermissionToView = false,
+                                    InsertedByUserId = userId,
+                                });
                             }
                         }
-                        catch (IOException)
+                        catch (IOException ex)
                         {
-                            throw;
+                            throw new AppException(ex.Message);
                         }
-                        filesProcessed++;
-
                     }
-
-                    uploadResults.Add(uploadResult);
                 }
+
+                await _photoRepository.InsertPhotos(photos);
+
                 var message = files.Count().Equals(1) ?
                     "The image has been successfully uploaded" : "The images have been successfully uploaded";
 
@@ -73,6 +74,10 @@
                 };
 
                 return response;
+            }
+            catch (AppException)
+            {
+                throw;
             }
             catch (Exception)
             {

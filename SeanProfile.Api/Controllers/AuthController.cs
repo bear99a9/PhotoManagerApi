@@ -32,7 +32,9 @@ namespace SeanProfile.Api.Controllers
                 var response = await _authService.Register(new UserModel
                 {
                     Email = request.Email,
-                    Password = request.Password
+                    Password = request.Password,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
                 });
 
                 if (!response.Success)
@@ -48,7 +50,7 @@ namespace SeanProfile.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -79,7 +81,7 @@ namespace SeanProfile.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
         }
@@ -106,7 +108,7 @@ namespace SeanProfile.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
         }

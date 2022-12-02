@@ -138,7 +138,11 @@ namespace SeanProfile.Api.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("email", user.Email),
+                new Claim("name", $"{user.FirstName} {user.LastName}"),
+                new Claim("role", user.Role),
+                new Claim("id", user.Id.ToString()),
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8

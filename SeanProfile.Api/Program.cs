@@ -41,6 +41,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBlobStorageRepository, BlobStorageRepository>();
 builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IPhotoRepository, PhotoRepository>();
 
 builder.Services.AddHttpContextAccessor();
 

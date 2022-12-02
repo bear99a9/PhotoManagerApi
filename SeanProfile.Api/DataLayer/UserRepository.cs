@@ -25,7 +25,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = "SELECT Id FROM [user] WHERE Email = @email";
+                var sql = "SELECT Id FROM [photomanager_user] WHERE Email = @email";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -44,9 +44,9 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"INSERT INTO [user] (Username, FirstName, LastName, Role, Email, PasswordHash, PasswordSalt)
+                var sql = @"INSERT INTO [photomanager_user] (FirstName, LastName, Role, Email, PasswordHash, PasswordSalt)
                             OUTPUT INSERTED.Id
-                        VALUES (@Username, @FirstName, @LastName, @Role, @Email, @PasswordHash, @PasswordSalt)";
+                        VALUES (@FirstName, @LastName, @Role, @Email, @PasswordHash, @PasswordSalt)";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -54,9 +54,8 @@ namespace SeanProfile.Api.DataLayer
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -65,7 +64,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"SELECT * FROM [user] WHERE Email = @Email ";
+                var sql = @"SELECT * FROM [photomanager_user] WHERE Email = @Email ";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -84,7 +83,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"SELECT * FROM [user] WHERE Id = @Id ";
+                var sql = @"SELECT * FROM [photomanager_user] WHERE Id = @Id ";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -103,7 +102,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"UPDATE [user] SET PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt WHERE Id = @Id";
+                var sql = @"UPDATE [photomanager_user] SET PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt WHERE Id = @Id";
 
                 using (var connection = GetOpenConnection())
                 {

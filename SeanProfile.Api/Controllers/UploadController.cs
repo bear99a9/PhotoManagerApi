@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace SeanProfile.Api.Controllers
 {
@@ -24,10 +25,12 @@ namespace SeanProfile.Api.Controllers
 
                 if (files.Any(f => f.Length == 0))
                 {
-                    throw new Exception("No files sent");
+                    throw new AppException("No files sent");
                 }
 
-                var response = await _blogService.SaveFile(files);
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var response = await _blogService.SaveFile(files, userId);
 
                 return Ok(response);
 
