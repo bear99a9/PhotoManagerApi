@@ -37,5 +37,24 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
+        public async Task<IEnumerable<PhotoModel>> RetrieveAllPhotos()
+        {
+            try
+            {
+                var sql = @"INSERT * FROM photomanager_photos";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.QueryAsync<PhotoModel>(sql);
+
+                    return result;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

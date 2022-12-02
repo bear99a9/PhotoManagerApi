@@ -85,5 +85,32 @@
             }
 
         }
+
+        public async Task<ServiceResponseModel<IEnumerable<PhotoModel>>> RetrieveAllPhotos()
+        {
+            try
+            {
+                var photos = await _photoRepository.RetrieveAllPhotos();
+
+                var response = new ServiceResponseModel<IEnumerable<PhotoModel>>()
+                {
+                    Data = photos,
+                    Success = true,
+                    Message = "Here are the photos"
+                };
+
+                return response;
+
+            }
+            catch (AppException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

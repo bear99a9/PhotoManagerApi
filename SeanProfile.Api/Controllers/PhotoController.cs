@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace SeanProfile.Api.Controllers
@@ -8,11 +6,11 @@ namespace SeanProfile.Api.Controllers
 
     public class PhotoController : BaseController
     {
-        private readonly IPhotoService _blogService;
+        private readonly IPhotoService _photoService;
 
-        public PhotoController(IPhotoService blogService)
+        public PhotoController(IPhotoService photoService)
         {
-            _blogService = blogService;
+            _photoService = photoService;
         }
 
         [HttpPost("upload-images")]
@@ -30,7 +28,27 @@ namespace SeanProfile.Api.Controllers
 
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                var response = await _blogService.SavePhoto(files, userId);
+                var response = await _photoService.SavePhoto(files, userId);
+
+                return Ok(response);
+
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpGet("retrieve-all-images")]
+        public async Task<IActionResult> RetrieveAll()
+        {
+            try
+            {
+                var response = await _photoService.RetrieveAllPhotos();
 
                 return Ok(response);
 
