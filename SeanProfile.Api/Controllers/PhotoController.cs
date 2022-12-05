@@ -63,6 +63,27 @@ namespace SeanProfile.Api.Controllers
             }
         }
 
+        [HttpGet("retrieve-featured-images")]
+        public async Task<IActionResult> RetrieveFeatured()
+        {
+            try
+            {
+                var response = await _photoService.RetrieveFeaturedPhotos();
+
+                return Ok(response);
+
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
     }
 
 }

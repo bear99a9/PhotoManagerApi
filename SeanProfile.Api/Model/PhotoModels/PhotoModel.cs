@@ -7,5 +7,9 @@
         public DateTime InsertedDateTime { get; set; }
         public bool PermissionToView { get; set; }
         public int InsertedByUserId { get; set; }
+        public string PhotoName { get; set; } = "";
+        public string PhotoThumb { get; set; } = "";
+        public string PhotoSRC { get; set; } = "";
+
     }
 }

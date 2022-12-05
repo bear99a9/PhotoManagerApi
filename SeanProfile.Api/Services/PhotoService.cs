@@ -51,6 +51,9 @@
                                     PhotoUrl = blobUri,
                                     PermissionToView = false,
                                     InsertedByUserId = userId,
+                                    PhotoName = trustedFileNameForFileStorage,
+                                    PhotoThumb = $"{_appSettings.ImagekitURL}{trustedFileNameForFileStorage}{_appSettings.ThumbNailSize}",
+                                    PhotoSRC = $"{_appSettings.ImagekitURL}{trustedFileNameForFileStorage}{_appSettings.SRCSize}"
                                 });
                             }
                         }
@@ -112,5 +115,33 @@
                 throw;
             }
         }
+
+        public async Task<ServiceResponseModel<IEnumerable<PhotoModel>>> RetrieveFeaturedPhotos()
+        {
+            try
+            {
+                var photos = await _photoRepository.RetrieveFeaturedPhotos();
+
+                var response = new ServiceResponseModel<IEnumerable<PhotoModel>>()
+                {
+                    Data = photos,
+                    Success = true,
+                    Message = "Here are the photos"
+                };
+
+                return response;
+
+            }
+            catch (AppException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

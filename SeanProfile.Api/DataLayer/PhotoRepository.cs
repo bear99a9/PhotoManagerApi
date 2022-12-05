@@ -23,8 +23,9 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"INSERT INTO photomanager_photos([photoUrl], [PermissionToView], [InsertedByUserId], [InsertedDateTime])
-	                        values(@photoUrl, @PermissionToView, @InsertedByUserId, GETDATE())";
+                var sql = @"INSERT INTO photomanager_photos([photoUrl],[PermissionToView],[InsertedByUserId],[InsertedDateTime],
+                            [PhotoName],[PhotoThumb],[PhotoSRC])
+	                        values(@photoUrl, @PermissionToView, @InsertedByUserId, GETDATE(),@PhotoName,@PhotoThumb,@PhotoSRC)";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -41,7 +42,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"INSERT * FROM photomanager_photos";
+                var sql = @"SELECT * FROM photomanager_photos";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -55,6 +56,26 @@ namespace SeanProfile.Api.DataLayer
                 throw;
             }
         }
+
+        public async Task<IEnumerable<PhotoModel>> RetrieveFeaturedPhotos()
+        {
+            try
+            {
+                var sql = @"SELECT * FROM photomanager_photos WHERE PermissionToView = 1";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.QueryAsync<PhotoModel>(sql);
+
+                    return result;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
     }
 }

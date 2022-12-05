@@ -5,5 +5,6 @@ namespace SeanProfile.Api.DataLayer
     {
         Task InsertPhotos(List<PhotoModel> photos);
         Task<IEnumerable<PhotoModel>> RetrieveAllPhotos();
+        Task<IEnumerable<PhotoModel>> RetrieveFeaturedPhotos();
     }
 }

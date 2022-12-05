@@ -7,7 +7,9 @@
         public string BlobConnString { get; set; } = string.Empty;
         public string BlobContainer { get; set; } = string.Empty;
         public string SqlConnection { get; set; } = string.Empty;
-        public int MaxAllowedFiles { get; set; }
-        public long MaxFileSize { get; set; }
+        public string ImagekitURL { get; set; } = string.Empty;
+        public string ThumbNailSize { get; set; } = string.Empty;
+        public string SRCSize { get; set; } = string.Empty;
+
     }
 }
