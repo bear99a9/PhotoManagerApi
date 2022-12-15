@@ -28,7 +28,7 @@ namespace SeanProfile.Api.Controllers
 
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                var response = await _photoService.SavePhoto(files, userId);
+                var response = await _photoService.SavePhoto(files, userId, false);
 
                 return Ok(response);
 
@@ -42,7 +42,38 @@ namespace SeanProfile.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
+        [HttpPost("upload-featured-images")]
+        public async Task<IActionResult> UploadFeatured()
+        {
+            try
+            {
+                var formCollection = await Request.ReadFormAsync();
+                var files = formCollection.Files;
+
+                if (files.Any(f => f.Length == 0))
+                {
+                    throw new AppException("No files sent");
+                }
+
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var response = await _photoService.SavePhoto(files, userId, true);
+
+                return Ok(response);
+
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         [HttpGet("retrieve-all-images")]
         public async Task<IActionResult> RetrieveAll()
         {

@@ -14,7 +14,7 @@
             _photoRepository = photoRepository;
         }
 
-        public async Task<ServiceResponseModel<IList<string>>> SavePhoto(IEnumerable<IFormFile> files, int userId)
+        public async Task<ServiceResponseModel<IList<string>>> SavePhoto(IEnumerable<IFormFile> files, int userId, bool permissionToView)
         {
             try
             {
@@ -49,7 +49,7 @@
                                 photos.Add(new()
                                 {
                                     PhotoUrl = blobUri,
-                                    PermissionToView = false,
+                                    PermissionToView = permissionToView,
                                     InsertedByUserId = userId,
                                     PhotoName = trustedFileNameForFileStorage,
                                     PhotoThumb = $"{_appSettings.ImagekitURL}{trustedFileNameForFileStorage}{_appSettings.ThumbNailSize}",

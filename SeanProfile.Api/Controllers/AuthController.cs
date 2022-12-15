@@ -24,7 +24,7 @@ namespace SeanProfile.Api.Controllers
         }
 
 
-        [HttpPost("register")]
+        [HttpPost("register")]//, Authorize]
         public async Task<IActionResult> RegisterUser(UserRegister request)
         {
             try

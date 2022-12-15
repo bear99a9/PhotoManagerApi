@@ -10,6 +10,12 @@
         public string ImagekitURL { get; set; } = string.Empty;
         public string ThumbNailSize { get; set; } = string.Empty;
         public string SRCSize { get; set; } = string.Empty;
+        public string SendGridApiKey { get; set; } = string.Empty;
+        public string NewPhotoTemplateID { get; set; } = string.Empty;
+        public string SendGridAPIBaseUrl { get; set; } = string.Empty;
+        public string SendGridSendMailPath { get; set; } = string.Empty;
+        private string EmailOverride { get; set; } = string.Empty;
+        private string EmailFrom { get; set; } = string.Empty;
 
     }
 }
