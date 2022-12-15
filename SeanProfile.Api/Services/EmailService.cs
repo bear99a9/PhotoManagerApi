@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SeanProfile.Api.Services
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         private readonly AppSettingsModel _appSettings;
 
