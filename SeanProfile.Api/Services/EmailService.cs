@@ -13,7 +13,7 @@ namespace SeanProfile.Api.Services
             _appSettings = options.Value;
         }
 
-        public async Task SendNewUploadEmail(IEnumerable<string> emails)
+        public async Task SendNewUploadEmail(IEnumerable<UserModel> users)
         {
             try
             {
@@ -32,9 +32,9 @@ namespace SeanProfile.Api.Services
                 }
                 else
                 {
-                    foreach (var email in emails)
+                    foreach (var user in users)
                     {
-                        sendGridMessage.AddTo(email);
+                        sendGridMessage.AddTo(user.Email);
                     }
 
                 }

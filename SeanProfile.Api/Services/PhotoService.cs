@@ -5,13 +5,18 @@
         private readonly AppSettingsModel _appSettings;
         private readonly IBlobStorageRepository _blobStorageRepository;
         private readonly IPhotoRepository _photoRepository;
+        private readonly IEmailService _emailService;
+        private readonly IUserRepository _userRepository;
 
         public PhotoService(IOptions<AppSettingsModel> options,
-            IBlobStorageRepository blobStorageRepository, IPhotoRepository photoRepository)
+            IBlobStorageRepository blobStorageRepository, IPhotoRepository photoRepository,
+            IEmailService emailService, IUserRepository userRepository)
         {
             _appSettings = options.Value;
             _blobStorageRepository = blobStorageRepository;
             _photoRepository = photoRepository;
+            _emailService = emailService;
+            _userRepository = userRepository;
         }
 
         public async Task<ServiceResponseModel<IList<string>>> SavePhoto(IEnumerable<IFormFile> files, int userId, bool permissionToView)
@@ -65,6 +70,8 @@
                 }
 
                 await _photoRepository.InsertPhotos(photos);
+
+                await SendEmail();
 
                 var message = files.Count().Equals(1) ?
                     "The image has been successfully uploaded" : "The images have been successfully uploaded";
@@ -142,6 +149,21 @@
                 throw;
             }
         }
+        private async Task SendEmail()
+        {
+            try
+            {
+                var users = await _userRepository.GetAllUsersToEmail();
+
+                await _emailService.SendNewUploadEmail(users);
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(ex.Message);
+            }
+
+        }
+
 
     }
 }

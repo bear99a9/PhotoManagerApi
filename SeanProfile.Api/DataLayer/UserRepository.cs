@@ -116,6 +116,25 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
+        public async Task<IEnumerable<UserModel>> GetAllUsersToEmail()
+        {
+            try
+            {
+                var sql = @"SELECT * FROM [photomanager_user] WHERE Role = 'Guest' ";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.QueryAsync<UserModel>(sql);
+                    return result;
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
     }
 }

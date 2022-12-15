@@ -10,5 +10,6 @@ namespace SeanProfile.Api.DataLayer
         Task<UserModel> GetUserByEmail<T>(T user);
         Task<UserModel> GetUserById<T>(T user);
         Task UpdateUserPassword(UserModel user);
+        Task<IEnumerable<UserModel>> GetAllUsersToEmail();
     }
 }
