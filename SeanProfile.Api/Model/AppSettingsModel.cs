@@ -14,8 +14,8 @@
         public string NewPhotoTemplateID { get; set; } = string.Empty;
         public string SendGridAPIBaseUrl { get; set; } = string.Empty;
         public string SendGridSendMailPath { get; set; } = string.Empty;
-        private string EmailOverride { get; set; } = string.Empty;
-        private string EmailFrom { get; set; } = string.Empty;
+        public string EmailOverride { get; set; } = string.Empty;
+        public string EmailFrom { get; set; } = string.Empty;
 
     }
 }

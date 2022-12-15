@@ -13,46 +13,37 @@ namespace SeanProfile.Api.Services
             _appSettings = options.Value;
         }
 
-        public async Task SendNewUploadEmail()
+        public async Task SendNewUploadEmail(IEnumerable<string> emails)
         {
             try
             {
-
 
                 var sendGridClient = new SendGridClient(_appSettings.SendGridApiKey)
                 {
                     UrlPath = _appSettings.SendGridAPIBaseUrl + _appSettings.SendGridSendMailPath
                 };
                 var sendGridMessage = new SendGridMessage();
-                sendGridMessage.SetFrom(_emailFrom);
+                sendGridMessage.SetFrom(_appSettings.EmailFrom);
 
 
-                if (!String.IsNullOrWhiteSpace(_emailOverride))
+                if (!String.IsNullOrWhiteSpace(_appSettings.EmailOverride))
                 {
-                    sendGridMessage.AddTo(_emailOverride);
+                    sendGridMessage.AddTo(_appSettings.EmailOverride);
                 }
                 else
                 {
-                    sendGridMessage.AddTo(contact.EmailAddress);
-                }
-
-                if (documentType == "CrownCommercialService" && companyId == 2)
-                {
-                    foreach (var email in _emailCC)
+                    foreach (var email in emails)
                     {
-                        sendGridMessage.AddCc(email);
+                        sendGridMessage.AddTo(email);
                     }
+
                 }
 
-                sendGridMessage.SetTemplateId(_emailTemplateAgreement);
+                sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
 
                 sendGridMessage.SetTemplateData(new
                 {
-                    Subject = SetAgreementName(documentType),
-                    Preheader = SetAgreementName(documentType),
-                    EmailBody = CreateEmailBodyForAgreement(contact.FullName),
-                    ButtonText = "Click to Sign",
-                    ButtonUrl = urlLink,
+                    Subject = "New photos uploaded",
                 });
 
                 var response = await sendGridClient.SendEmailAsync(sendGridMessage);
