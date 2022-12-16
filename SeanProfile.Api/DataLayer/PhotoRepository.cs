@@ -32,8 +32,9 @@ namespace SeanProfile.Api.DataLayer
                     var result = await connection.ExecuteAsync(sql, photos);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }

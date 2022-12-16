@@ -22,39 +22,65 @@ namespace SeanProfile.Api.Services
                 {
                     UrlPath = _appSettings.SendGridAPIBaseUrl + _appSettings.SendGridSendMailPath
                 };
-                var sendGridMessage = new SendGridMessage();
-                sendGridMessage.SetFrom(_appSettings.EmailFrom);
-
 
                 if (!String.IsNullOrWhiteSpace(_appSettings.EmailOverride))
                 {
+                    var sendGridMessage = new SendGridMessage();
+
+                    sendGridMessage.SetFrom(_appSettings.EmailFrom);
+
                     sendGridMessage.AddTo(_appSettings.EmailOverride);
+                    sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
+
+                    sendGridMessage.SetTemplateData(new
+                    {
+                        Subject = "New photos uploaded",
+                        Name = $"Hi Sean"
+                    });
+
+                    var response = await sendGridClient.SendEmailAsync(sendGridMessage);
+
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
+                    {
+                        return;
+                    }
+
+                    throw new Exception($"Status Code returned not valid: {response.StatusCode};  response content: {response.Body}");
+
                 }
                 else
                 {
                     foreach (var user in users)
                     {
+                        var sendGridMessage = new SendGridMessage();
+
+                        sendGridMessage.SetFrom(_appSettings.EmailFrom);
+
                         sendGridMessage.AddTo(user.Email);
+
+                        sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
+
+                        sendGridMessage.SetTemplateData(new
+                        {
+                            Subject = "New photos uploaded",
+                            Name = $"Hi {user.FirstName}"
+
+                        });
+
+                        var response = await sendGridClient.SendEmailAsync(sendGridMessage);
+
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
+                        {
+                            return;
+                        }
+
+                        throw new Exception($"Status Code returned not valid: {response.StatusCode};  response content: {response.Body}");
+
                     }
 
                 }
-
-                sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
-
-                sendGridMessage.SetTemplateData(new
-                {
-                    Subject = "New photos uploaded",
-                });
-
-                var response = await sendGridClient.SendEmailAsync(sendGridMessage);
-
-
-                if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
-                {
-                    return;
-                }
-
-                throw new Exception($"Status Code returned not valid: {response.StatusCode};  response content: {response.Body}");
 
             }
             catch (Exception)
