@@ -6,6 +6,7 @@ namespace SeanProfile.Api.Services
     {
         Task<ServiceResponseModel<int>> Register(UserModel user);
         Task<ServiceResponseModel<string>> Login(UserLogin userLogin);
-        Task<ServiceResponseModel<bool>> ChangePassword(UserChangePassword changePassword);    
+        Task<ServiceResponseModel<bool>> ChangePassword(UserChangePassword changePassword);
+        Task<ServiceResponseModel<bool>> RequestPasswordReset(UserRequestChangePassword userRequestChangePassword);
     }
 }

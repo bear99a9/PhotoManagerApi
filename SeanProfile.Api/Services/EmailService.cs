@@ -35,7 +35,7 @@ namespace SeanProfile.Api.Services
                     sendGridMessage.SetTemplateData(new
                     {
                         Subject = "New photos uploaded",
-                        Name = $"Hi Sean"
+                        Name = $"Hi Test"
                     });
 
                     var response = await sendGridClient.SendEmailAsync(sendGridMessage);
@@ -64,7 +64,7 @@ namespace SeanProfile.Api.Services
                         sendGridMessage.SetTemplateData(new
                         {
                             Subject = "New photos uploaded",
-                            Name = $"Hi {user.FirstName}"
+                            Name = $"Hi {NameBuilder(user)}"
 
                         });
 
@@ -90,5 +90,72 @@ namespace SeanProfile.Api.Services
 
         }
 
+        public async Task SendPasswordResetEmail(UserModel user)
+        {
+            try
+            {
+                var name = NameBuilder(user);
+
+                var sendGridClient = new SendGridClient(_appSettings.SendGridApiKey)
+                {
+                    UrlPath = _appSettings.SendGridAPIBaseUrl + _appSettings.SendGridSendMailPath
+                };
+
+                var sendGridMessage = new SendGridMessage();
+
+                sendGridMessage.SetFrom(_appSettings.EmailFrom);
+
+                sendGridMessage.AddTo(user.FirstName);
+                sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
+
+                sendGridMessage.SetTemplateData(new
+                {
+                    Subject = "New photos uploaded",
+                    Name = $"Hi {name}",
+                    Body = ""
+                });
+
+                if (!String.IsNullOrWhiteSpace(_appSettings.EmailOverride))
+                {
+                    sendGridMessage.AddTo(_appSettings.EmailOverride);
+                }
+
+                var response = await sendGridClient.SendEmailAsync(sendGridMessage);
+
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
+                {
+                    return;
+                }
+
+                throw new Exception($"Status Code returned not valid: {response.StatusCode};  response content: {response.Body}");
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+        private string NameBuilder(UserModel user)
+        {
+            if (!String.IsNullOrWhiteSpace(_appSettings.EmailOverride))
+            {
+                return "Test";
+            }
+
+            if (user.FirstName == "Tony" || user.FirstName == "Des" )
+            {
+                return "Dad";
+            }
+
+            if (user.FirstName == "Alexia" || user.FirstName == "Lisa")
+            {
+                return "Mum";
+            }
+
+            return user.FirstName;
+        }
     }
 }
