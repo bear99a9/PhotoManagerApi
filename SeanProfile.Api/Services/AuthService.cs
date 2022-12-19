@@ -16,11 +16,13 @@ namespace SeanProfile.Api.Services
     {
         private readonly AppSettingsModel _appSettings;
         private readonly IUserRepository _userRepo;
+        private readonly IEmailService _emailService;
 
-        public AuthService(IUserRepository userRepository, IOptions<AppSettingsModel> options)
+        public AuthService(IUserRepository userRepository, IOptions<AppSettingsModel> options, IEmailService emailService)
         {
             _appSettings = options.Value;
             _userRepo = userRepository;
+            _emailService = emailService;
         }
 
 
@@ -129,6 +131,9 @@ namespace SeanProfile.Api.Services
                     UserId = user.Id
                 };
 
+                await _emailService.SendPasswordResetEmail(user, passwordReset);
+
+                await _userRepo.InsertPasswordReset(passwordReset);
 
                 return new ServiceResponseModel<bool> { Success = true, Message = "An email has been sent to your inbox to reset your password" };
             }

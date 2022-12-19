@@ -90,7 +90,7 @@ namespace SeanProfile.Api.Services
 
         }
 
-        public async Task SendPasswordResetEmail(UserModel user)
+        public async Task SendPasswordResetEmail(UserModel user, PasswordReset passwordReset)
         {
             try
             {
@@ -105,14 +105,16 @@ namespace SeanProfile.Api.Services
 
                 sendGridMessage.SetFrom(_appSettings.EmailFrom);
 
-                sendGridMessage.AddTo(user.FirstName);
-                sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
+                sendGridMessage.AddTo(user.Email);
+                sendGridMessage.SetTemplateId(_appSettings.PasswordResetTemplateID);
 
                 sendGridMessage.SetTemplateData(new
                 {
-                    Subject = "New photos uploaded",
+                    Subject = "Reset Password",
                     Name = $"Hi {name}",
-                    Body = ""
+                    Body = @$"Here is the link to reset your password: www.rosannaandsean.co.uk/reset-password/{passwordReset.PasswordResetKey}.",
+                    Body1 = "This link is only valid for 12 hours. A new link will need to be created after this time."
+
                 });
 
                 if (!String.IsNullOrWhiteSpace(_appSettings.EmailOverride))
@@ -145,7 +147,7 @@ namespace SeanProfile.Api.Services
                 return "Test";
             }
 
-            if (user.FirstName == "Tony" || user.FirstName == "Des" )
+            if (user.FirstName == "Tony" || user.FirstName == "Des")
             {
                 return "Dad";
             }
