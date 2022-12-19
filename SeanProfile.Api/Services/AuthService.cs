@@ -122,6 +122,13 @@ namespace SeanProfile.Api.Services
                     return new ServiceResponseModel<bool> { Success = false, Message = "User not found" };
                 }
 
+                var passwordReset = new PasswordReset
+                {
+                    PasswordResetKey = $"{Guid.NewGuid()}{Guid.NewGuid()}",
+                    PasswordResetKeyTimeOut = DateTime.Now.AddHours(12).Ticks,
+                    UserId = user.Id
+                };
+
 
                 return new ServiceResponseModel<bool> { Success = true, Message = "An email has been sent to your inbox to reset your password" };
             }

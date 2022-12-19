@@ -11,5 +11,8 @@ namespace SeanProfile.Api.DataLayer
         Task<UserModel> GetUserById<T>(T user);
         Task UpdateUserPassword(UserModel user);
         Task<IEnumerable<UserModel>> GetAllUsersToEmail();
+        Task InsertPasswordReset(PasswordReset passwordReset);
+        Task<PasswordReset> RetrievePasswordReset(string passwordResetKey);
+        Task UpdatePasswordReset(string passwordResetKey);
     }
 }

@@ -60,6 +60,62 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
+        public async Task InsertPasswordReset(PasswordReset passwordReset)
+        {
+            try
+            {
+                var sql = @"INSERT INTO [photomanager_passwordReset] (UserId, PasswordResetKey, PasswordResetKeyTimeOut, PasswordResetUsed, InsertedDateTime )
+                        VALUES (@UserId, @PasswordResetKey, @PasswordResetKeyTimeOut, 0, GETDATE())";
+
+                using (var connection = GetOpenConnection())
+                {
+                    await connection.ExecuteAsync(sql, passwordReset);
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<PasswordReset> RetrievePasswordReset(string passwordResetKey)
+        {
+            try
+            {
+                var sql = @"SELECT * FROM photomanager_passwordReset WHERE PasswordResetKey = @passwordResetKey ORDER BY InsertedDateTime DESC";
+
+                using (var connection = GetOpenConnection())
+                {
+                    return await connection.QueryFirstOrDefaultAsync<PasswordReset>(sql, new { passwordResetKey });
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task UpdatePasswordReset(string passwordResetKey)
+        {
+            try
+            {
+                var sql = @"UPDATE [photomanager_passwordReset] SET PasswordResetUsed = 1, UsedDateTime = GETDATE() WHERE PasswordResetKey = @passwordResetKey";
+
+                using (var connection = GetOpenConnection())
+                {
+                    await connection.ExecuteAsync(sql, new { passwordResetKey });
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
         public async Task<UserModel> GetUserByEmail<T>(T user)
         {
             try
