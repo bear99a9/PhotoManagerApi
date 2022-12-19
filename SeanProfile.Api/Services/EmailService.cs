@@ -59,7 +59,7 @@ namespace SeanProfile.Api.Services
 
                         sendGridMessage.AddTo(user.Email);
 
-                        sendGridMessage.SetTemplateId(_appSettings.NewPhotoTemplateID);
+                        sendGridMessage.SetTemplateId(_appSettings.PasswordResetTemplateID);
 
                         sendGridMessage.SetTemplateData(new
                         {
