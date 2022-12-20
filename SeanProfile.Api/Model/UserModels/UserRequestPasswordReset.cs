@@ -1,6 +1,6 @@
 ﻿namespace SeanProfile.Api.Model
 {
-    public class UserRequestChangePassword
+    public class UserRequestPasswordReset
     {
         public string Email { get; set; } = string.Empty;
     }

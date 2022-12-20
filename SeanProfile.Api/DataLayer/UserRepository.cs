@@ -73,8 +73,9 @@ namespace SeanProfile.Api.DataLayer
 
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -129,8 +130,9 @@ namespace SeanProfile.Api.DataLayer
 
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }

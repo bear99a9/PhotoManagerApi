@@ -112,16 +112,16 @@ namespace SeanProfile.Api.Services
 
         }
 
-        public async Task<ServiceResponseModel<bool>> RequestPasswordReset(UserRequestChangePassword userRequestChangePassword)
+        public async Task<ServiceResponseModel<bool>> RequestPasswordReset(UserRequestPasswordReset userRequestChangePassword)
         {
             try
             {
 
-                var user = await _userRepo.GetUserByEmail<UserRequestChangePassword>(userRequestChangePassword);
+                var user = await _userRepo.GetUserByEmail<UserRequestPasswordReset>(userRequestChangePassword);
 
                 if (user == null)
                 {
-                    return new ServiceResponseModel<bool> { Success = false, Message = "User not found" };
+                    return new ServiceResponseModel<bool> { Success = false, Message = "Looks like you have enetered the wrong email address. Please enter the email address you registered with." };
                 }
 
                 var passwordReset = new PasswordReset

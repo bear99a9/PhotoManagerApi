@@ -112,7 +112,7 @@ namespace SeanProfile.Api.Services
                 {
                     Subject = "Reset Password",
                     Name = $"Hi {name}",
-                    Body = @$"Here is the link to reset your password: www.rosannaandsean.co.uk/reset-password/{passwordReset.PasswordResetKey}.",
+                    Body = @$"Here is the link to reset your password: {_appSettings.WebsiteUrl}reset-password/{passwordReset.PasswordResetKey}.",
                     Body1 = "This link is only valid for 12 hours. A new link will need to be created after this time."
 
                 });

@@ -113,6 +113,27 @@ namespace SeanProfile.Api.Controllers
 
         }
 
+        [HttpPost("password-reset-request")]
+        public async Task<IActionResult> RequestPasswordReset(UserRequestPasswordReset request)
+        {
+            try
+            {
+                var response = await _authService.RequestPasswordReset(request);
+
+                return Ok(response);
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+
         [HttpPost("refresh-token")]
         public ActionResult<string> RefreshToken()
         {

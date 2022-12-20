@@ -17,7 +17,7 @@
         public string SendGridSendMailPath { get; set; } = string.Empty;
         public string EmailOverride { get; set; } = string.Empty;
         public string EmailFrom { get; set; } = string.Empty;
-
+        public string WebsiteUrl { get; set; } = string.Empty;
 
     }
 }
