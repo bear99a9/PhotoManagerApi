@@ -84,7 +84,9 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"SELECT * FROM photomanager_passwordReset WHERE PasswordResetKey = @passwordResetKey ORDER BY InsertedDateTime DESC";
+                var sql = @"SELECT * FROM photomanager_passwordReset 
+                            WHERE PasswordResetKey = @passwordResetKey AND PasswordResetUsed = 0
+                            ORDER BY InsertedDateTime DESC";
 
                 using (var connection = GetOpenConnection())
                 {

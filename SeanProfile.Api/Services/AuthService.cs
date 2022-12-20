@@ -103,7 +103,7 @@ namespace SeanProfile.Api.Services
 
                 await _userRepo.UpdateUserPassword(user);
 
-                return new ServiceResponseModel<bool> { Success = true, Message = "Password changed successfully" };
+                return new ServiceResponseModel<bool> { Success = true, Message = "Password reset successfully" };
             }
             catch (Exception)
             {
@@ -143,6 +143,29 @@ namespace SeanProfile.Api.Services
             }
 
         }
+
+        public async Task<bool> IsAccessTokenAuthorised(UserChangePassword request)
+        {
+            try
+            {
+                var roomUserAccess = await _userRepo.RetrievePasswordReset(request.PasswordResetKey);
+
+                if (roomUserAccess is null) return false;
+
+                if (DateTime.Now.Ticks > roomUserAccess.PasswordResetKeyTimeOut) return false;
+
+                await _userRepo.UpdatePasswordReset(request.PasswordResetKey);
+
+                request.Id = roomUserAccess.UserId;
+                return true;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

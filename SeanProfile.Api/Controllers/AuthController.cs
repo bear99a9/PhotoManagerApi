@@ -113,6 +113,35 @@ namespace SeanProfile.Api.Controllers
 
         }
 
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(UserChangePassword request)
+        {
+            try
+            {
+                if (await _authService.IsAccessTokenAuthorised(request))
+                {
+                    var response = await _authService.ChangePassword(request);
+
+                    return Ok(response);
+                }
+
+                return Ok(new ServiceResponseModel<bool> {
+                    Success = false, 
+                    Message = "The link has expired. Please generate another password reset link via the login page."
+                });
+
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         [HttpPost("password-reset-request")]
         public async Task<IActionResult> RequestPasswordReset(UserRequestPasswordReset request)
         {

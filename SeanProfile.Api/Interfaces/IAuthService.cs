@@ -8,5 +8,6 @@ namespace SeanProfile.Api.Services
         Task<ServiceResponseModel<string>> Login(UserLogin userLogin);
         Task<ServiceResponseModel<bool>> ChangePassword(UserChangePassword changePassword);
         Task<ServiceResponseModel<bool>> RequestPasswordReset(UserRequestPasswordReset userRequestChangePassword);
+        Task<bool> IsAccessTokenAuthorised(UserChangePassword request);
     }
 }
