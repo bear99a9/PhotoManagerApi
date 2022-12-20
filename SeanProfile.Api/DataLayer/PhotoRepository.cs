@@ -43,7 +43,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"SELECT * FROM photomanager_photos";
+                var sql = @"SELECT * FROM photomanager_photos ORDER BY InsertedDateTime DESC";
 
                 using (var connection = GetOpenConnection())
                 {
@@ -62,7 +62,7 @@ namespace SeanProfile.Api.DataLayer
         {
             try
             {
-                var sql = @"SELECT * FROM photomanager_photos WHERE PermissionToView = 1";
+                var sql = @"SELECT * FROM photomanager_photos WHERE PermissionToView = 1 ORDER BY InsertedDateTime DESC";
 
                 using (var connection = GetOpenConnection())
                 {
