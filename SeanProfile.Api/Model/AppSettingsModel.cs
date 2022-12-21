@@ -18,6 +18,8 @@
         public string EmailOverride { get; set; } = string.Empty;
         public string EmailFrom { get; set; } = string.Empty;
         public string WebsiteUrl { get; set; } = string.Empty;
+        public int PasswordResetHoursValidFor { get; set; }
+        public int BearerTokenHoursValidFor { get; set; }
 
     }
 }

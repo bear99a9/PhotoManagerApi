@@ -116,6 +116,7 @@ namespace SeanProfile.Api.Services
         {
             try
             {
+                userRequestChangePassword.Email = userRequestChangePassword.Email.ToLower();
 
                 var user = await _userRepo.GetUserByEmail<UserRequestPasswordReset>(userRequestChangePassword);
 
@@ -127,7 +128,7 @@ namespace SeanProfile.Api.Services
                 var passwordReset = new PasswordReset
                 {
                     PasswordResetKey = $"{Guid.NewGuid()}{Guid.NewGuid()}",
-                    PasswordResetKeyTimeOut = DateTime.Now.AddHours(12).Ticks,
+                    PasswordResetKeyTimeOut = DateTime.Now.AddHours(_appSettings.PasswordResetHoursValidFor).Ticks,
                     UserId = user.Id
                 };
 
@@ -208,7 +209,7 @@ namespace SeanProfile.Api.Services
 
             var token = new JwtSecurityToken(
                     claims: claims,
-                    expires: DateTime.Now.AddDays(1),
+                    expires: DateTime.Now.AddHours(_appSettings.BearerTokenHoursValidFor),
                     signingCredentials: creds);
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);

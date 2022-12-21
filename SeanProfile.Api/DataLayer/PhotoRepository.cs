@@ -24,8 +24,9 @@ namespace SeanProfile.Api.DataLayer
             try
             {
                 var sql = @"INSERT INTO photomanager_photos([photoUrl],[PermissionToView],[InsertedByUserId],[InsertedDateTime],
-                            [PhotoName],[PhotoThumb],[PhotoSRC])
-	                        values(@photoUrl, @PermissionToView, @InsertedByUserId, GETDATE(),@PhotoName,@PhotoThumb,@PhotoSRC)";
+                            [PhotoName],[PhotoThumb],[PhotoSRC],[Latitude],[Longitude])
+	                        values(@photoUrl, @PermissionToView, @InsertedByUserId, GETDATE(),@PhotoName,@PhotoThumb,
+                            @PhotoSRC,@Latitude,@Longitude)";
 
                 using (var connection = GetOpenConnection())
                 {

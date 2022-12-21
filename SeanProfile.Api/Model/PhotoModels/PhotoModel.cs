@@ -10,6 +10,9 @@
         public string PhotoName { get; set; } = "";
         public string PhotoThumb { get; set; } = "";
         public string PhotoSRC { get; set; } = "";
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
 
     }
 }
