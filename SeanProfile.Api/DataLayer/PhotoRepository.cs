@@ -78,6 +78,25 @@ namespace SeanProfile.Api.DataLayer
             }
         }
 
+        public async Task<IEnumerable<PhotoCoOrdinates>> RetrievePhotosCoOrdinates()
+        {
+            try
+            {
+                var sql = @"SELECT Latitude AS Lat, Longitude AS Lng FROM photomanager_photos WHERE Latitude != 0 AND Longitude != 0";
+
+                using (var connection = GetOpenConnection())
+                {
+                    var result = await connection.QueryAsync<PhotoCoOrdinates>(sql);
+
+                    return result;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
     }
 }

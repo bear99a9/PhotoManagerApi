@@ -114,6 +114,27 @@ namespace SeanProfile.Api.Controllers
             }
         }
 
+        [HttpGet("retrieve-images-co-ordinates")]
+        public async Task<IActionResult> RetrieveCoOrdinates()
+        {
+            try
+            {
+                var response = await _photoService.RetrievePhotosCoOrdinates();
+
+                return Ok(response);
+
+            }
+            catch (AppException ex)
+            {
+                return new ValidationError(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
     }
 

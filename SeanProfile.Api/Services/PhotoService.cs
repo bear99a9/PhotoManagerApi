@@ -157,6 +157,34 @@ namespace SeanProfile.Api.Services
                 throw;
             }
         }
+
+        public async Task<ServiceResponseModel<IEnumerable<PhotoCoOrdinates>>> RetrievePhotosCoOrdinates()
+        {
+            try
+            {
+                var photos = await _photoRepository.RetrievePhotosCoOrdinates();
+
+                var response = new ServiceResponseModel<IEnumerable<PhotoCoOrdinates>>()
+                {
+                    Data = photos,
+                    Success = true,
+                    Message = "Here are the photos co-ordinates"
+                };
+
+                return response;
+
+            }
+            catch (AppException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         private async Task SendEmail()
         {
             try
