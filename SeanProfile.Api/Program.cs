@@ -44,20 +44,14 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
-    options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-});
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
 
-builder.Services.AddAuthentication(options => {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -94,12 +88,11 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseCors("corsapp");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-
-app.UseCors("Open");
 
 app.MapControllers();
 
